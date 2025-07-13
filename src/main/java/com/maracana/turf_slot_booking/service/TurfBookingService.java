@@ -37,7 +37,7 @@ public class TurfBookingService {
         return req.map(loginReq -> {
             UserSignUp user = userSignUpRepository.findByEmailAndPassword(loginReq.getEmail(), loginReq.getPassword());
             if (user != null) {
-                return "Login successful";
+                return "Login successfully for user: " + user.getName();
             } else {
                 throw new BadRequestException("Invalid email or password");
             }
