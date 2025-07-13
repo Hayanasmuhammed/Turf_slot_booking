@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maracana.turf_slot_booking.model.LoginReq;
 import com.maracana.turf_slot_booking.model.SignUpReq;
 import com.maracana.turf_slot_booking.service.TurfBookingService;
 
@@ -18,10 +19,17 @@ public class Controller {
     @Autowired
     private TurfBookingService turfBookingService;
 
-    // controller for signup using email
+    // controller for signup
     @PostMapping("/v1/user/signup")
     public String signupUserByEmail(@RequestBody @Valid Optional<SignUpReq> req) {
         String res = turfBookingService.signUp(req);
+        return res;
+    }
+
+    // login usiing email and password
+    @PostMapping("/v1/user/login")
+    public String loginUser(@RequestBody @Valid Optional<LoginReq> req) {
+        String res = turfBookingService.login(req);
         return res;
     }
 
