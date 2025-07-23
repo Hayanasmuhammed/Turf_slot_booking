@@ -10,4 +10,7 @@ public interface UserSignUpRepository extends MongoRepository<UserSignUp, String
     @Query(value = "{ 'email' : ?0, 'password' : ?1 }")
     UserSignUp findByEmailAndPassword(String email, String password);
 
+    @Query(value = "{ 'email' : ?0 }", exists = true)
+    boolean existsByEmail(String email);
+
 }

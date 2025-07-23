@@ -26,6 +26,9 @@ public class TurfBookingService {
             throw new BadRequestException("Request is not present");
         }
         SignUpReq signUpReq = req.get();
+        if (userSignUpRepository.existsByEmail(signUpReq.getEmail())) {
+            throw new BadRequestException("Already registerd");
+        }
         UUID uuid = UUID.randomUUID();
         UserSignUp userSignUp = new UserSignUp(uuid.toString(), signUpReq.getName(), signUpReq.getEmail(),
                 signUpReq.getPassword());
