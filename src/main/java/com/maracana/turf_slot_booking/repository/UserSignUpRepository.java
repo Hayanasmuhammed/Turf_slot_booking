@@ -1,5 +1,8 @@
 package com.maracana.turf_slot_booking.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -12,5 +15,8 @@ public interface UserSignUpRepository extends MongoRepository<UserSignUp, String
 
     @Query(value = "{ 'email' : ?0 }", exists = true)
     boolean existsByEmail(String email);
+
+    @Query(value = "{ 'email' : ?0 }")
+    List<UserSignUp> findByEmail(String email);
 
 }

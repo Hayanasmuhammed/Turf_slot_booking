@@ -1,5 +1,8 @@
 package com.maracana.turf_slot_booking.service;
 
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,7 +12,9 @@ import org.springframework.stereotype.Service;
 import com.maracana.turf_slot_booking.exception.BadRequestException;
 import com.maracana.turf_slot_booking.model.LoginReq;
 import com.maracana.turf_slot_booking.model.SignUpReq;
+import com.maracana.turf_slot_booking.model.UserOTP;
 import com.maracana.turf_slot_booking.model.UserSignUp;
+import com.maracana.turf_slot_booking.repository.OtpRepository;
 import com.maracana.turf_slot_booking.repository.UserSignUpRepository;
 
 @Service
@@ -20,6 +25,11 @@ public class TurfBookingService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private OtpRepository otpRepository;
+
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public String signUp(Optional<SignUpReq> req) {
         if (!req.isPresent()) {
@@ -70,6 +80,30 @@ public class TurfBookingService {
                 throw new BadRequestException("Invalid email or password");
             }
         }).orElseThrow(() -> new BadRequestException("Request is not present"));
+    }
+
+    public String forgotPasswordOtpToMail(String email) {
+
+        List<UserSignUp> byEmail = userSignUpRepository.findByEmail(email);
+        if (byEmail.size() == 0) {
+            throw new BadRequestException("Not a registered user");
+        }
+        UserSignUp user = byEmail.get(0);
+        int otp = generateOTP();
+        // send email
+        StringBuilder emailBody = new StringBuilder();
+
+        emailBody.append("Hi ").append(user.getName()).append(",\n\n");
+        emailBody.append("Your Otp to change password is: " + otp);
+        emailService.sendSimpleEmail(user.getEmail(), "One Time Password", emailBody.toString());
+        otpRepository.save(new UserOTP(user.getId(), otp, LocalDateTime.now()));
+        return "Otp sent successfully";
+
+    }
+
+    public Integer generateOTP() {
+        int otp = 100000 + secureRandom.nextInt(900000);
+        return otp;
     }
 
 }
